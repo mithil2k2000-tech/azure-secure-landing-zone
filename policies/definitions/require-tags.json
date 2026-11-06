@@ -1,0 +1,28 @@
+{
+  "displayName": "LZ: Resource groups must have owner, environment and cost-centre tags",
+  "description": "Every resource group must declare who owns it, which environment it belongs to and who pays for it.",
+  "mode": "All",
+  "metadata": { "category": "Tags", "version": "1.0.0" },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "allowedValues": ["Audit", "Deny", "Disabled"],
+      "defaultValue": "Deny"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        { "field": "type", "equals": "Microsoft.Resources/subscriptions/resourceGroups" },
+        {
+          "anyOf": [
+            { "field": "tags['owner']", "exists": "false" },
+            { "field": "tags['environment']", "exists": "false" },
+            { "field": "tags['cost-centre']", "exists": "false" }
+          ]
+        }
+      ]
+    },
+    "then": { "effect": "[parameters('effect')]" }
+  }
+}

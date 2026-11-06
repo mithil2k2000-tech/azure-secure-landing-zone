@@ -1,0 +1,165 @@
+{
+  "displayName": "LZ: NSG rules must not allow RDP or SSH from the internet",
+  "description": "Blocks inbound Allow rules for ports 22 and 3389 from Any/Internet/0.0.0.0/0, whether written as separate rule resources or inline in the NSG. Admin access goes through Bastion.",
+  "mode": "All",
+  "metadata": {
+    "category": "Network",
+    "version": "1.1.0"
+  },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "allowedValues": [
+        "Audit",
+        "Deny",
+        "Disabled"
+      ],
+      "defaultValue": "Deny"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "anyOf": [
+        {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Network/networkSecurityGroups/securityRules"
+            },
+            {
+              "field": "Microsoft.Network/networkSecurityGroups/securityRules/access",
+              "equals": "Allow"
+            },
+            {
+              "field": "Microsoft.Network/networkSecurityGroups/securityRules/direction",
+              "equals": "Inbound"
+            },
+            {
+              "anyOf": [
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/destinationPortRange",
+                  "in": [
+                    "22",
+                    "3389",
+                    "*"
+                  ]
+                },
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/destinationPortRanges[*]",
+                  "in": [
+                    "22",
+                    "3389"
+                  ]
+                }
+              ]
+            },
+            {
+              "anyOf": [
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix",
+                  "in": [
+                    "*",
+                    "Internet",
+                    "0.0.0.0/0",
+                    "Any"
+                  ]
+                },
+                {
+                  "field": "Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefixes[*]",
+                  "in": [
+                    "*",
+                    "Internet",
+                    "0.0.0.0/0",
+                    "Any"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Network/networkSecurityGroups"
+            },
+            {
+              "count": {
+                "field": "Microsoft.Network/networkSecurityGroups/securityRules[*]",
+                "where": {
+                  "allOf": [
+                    {
+                      "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].access",
+                      "equals": "Allow"
+                    },
+                    {
+                      "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].direction",
+                      "equals": "Inbound"
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].destinationPortRange",
+                          "in": [
+                            "22",
+                            "3389",
+                            "*"
+                          ]
+                        },
+                        {
+                          "count": {
+                            "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].destinationPortRanges[*]",
+                            "where": {
+                              "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].destinationPortRanges[*]",
+                              "in": [
+                                "22",
+                                "3389"
+                              ]
+                            }
+                          },
+                          "greater": 0
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].sourceAddressPrefix",
+                          "in": [
+                            "*",
+                            "Internet",
+                            "0.0.0.0/0",
+                            "Any"
+                          ]
+                        },
+                        {
+                          "count": {
+                            "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].sourceAddressPrefixes[*]",
+                            "where": {
+                              "field": "Microsoft.Network/networkSecurityGroups/securityRules[*].sourceAddressPrefixes[*]",
+                              "in": [
+                                "*",
+                                "Internet",
+                                "0.0.0.0/0",
+                                "Any"
+                              ]
+                            }
+                          },
+                          "greater": 0
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "greater": 0
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]"
+    }
+  }
+}

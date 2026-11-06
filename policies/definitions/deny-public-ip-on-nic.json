@@ -1,0 +1,27 @@
+{
+  "displayName": "LZ: Network interfaces must not have public IPs",
+  "description": "Workloads are reached through the hub (Bastion, Firewall, Application Gateway), never directly.",
+  "mode": "Indexed",
+  "metadata": { "category": "Network", "version": "1.0.0" },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "allowedValues": ["Audit", "Deny", "Disabled"],
+      "defaultValue": "Deny"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        { "field": "type", "equals": "Microsoft.Network/networkInterfaces" },
+        {
+          "not": {
+            "field": "Microsoft.Network/networkInterfaces/ipconfigurations[*].publicIpAddress.id",
+            "notLike": "*"
+          }
+        }
+      ]
+    },
+    "then": { "effect": "[parameters('effect')]" }
+  }
+}

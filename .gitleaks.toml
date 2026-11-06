@@ -1,0 +1,13 @@
+title = "landing-zone gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Example files contain placeholder GUIDs only"
+paths = [
+  '''.*\.example$''',
+]
+regexes = [
+  '''00000000-0000-0000-0000-000000000000''',
+]

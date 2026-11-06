@@ -1,0 +1,28 @@
+{
+  "displayName": "LZ: Storage accounts must use HTTPS, TLS 1.2 and block public blob access",
+  "description": "Denies storage accounts that allow HTTP, TLS below 1.2 or anonymous blob access.",
+  "mode": "Indexed",
+  "metadata": { "category": "Storage", "version": "1.0.0" },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "allowedValues": ["Audit", "Deny", "Disabled"],
+      "defaultValue": "Deny"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        { "field": "type", "equals": "Microsoft.Storage/storageAccounts" },
+        {
+          "anyOf": [
+            { "field": "Microsoft.Storage/storageAccounts/supportsHttpsTrafficOnly", "equals": "false" },
+            { "field": "Microsoft.Storage/storageAccounts/minimumTlsVersion", "notEquals": "TLS1_2" },
+            { "field": "Microsoft.Storage/storageAccounts/allowBlobPublicAccess", "equals": "true" }
+          ]
+        }
+      ]
+    },
+    "then": { "effect": "[parameters('effect')]" }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "displayName": "LZ: Key vaults should have purge protection enabled",
+  "description": "Audits key vaults that can be permanently deleted during the soft-delete window.",
+  "mode": "Indexed",
+  "metadata": { "category": "Key Vault", "version": "1.0.0" },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "allowedValues": ["Audit", "Deny", "Disabled"],
+      "defaultValue": "Audit"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        { "field": "type", "equals": "Microsoft.KeyVault/vaults" },
+        {
+          "anyOf": [
+            { "field": "Microsoft.KeyVault/vaults/enablePurgeProtection", "exists": "false" },
+            { "field": "Microsoft.KeyVault/vaults/enablePurgeProtection", "equals": "false" }
+          ]
+        }
+      ]
+    },
+    "then": { "effect": "[parameters('effect')]" }
+  }
+}

@@ -1,0 +1,10 @@
+# Trivy misconfiguration scan; fails the build on HIGH or CRITICAL findings.
+severity:
+  - HIGH
+  - CRITICAL
+scan:
+  skip-dirs:
+    - "**/.terraform"
+misconfiguration:
+  scanners:
+    - terraform

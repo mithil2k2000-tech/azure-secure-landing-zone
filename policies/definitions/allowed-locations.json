@@ -1,0 +1,26 @@
+{
+  "displayName": "LZ: Allowed locations",
+  "description": "Resources may only be created in approved regions. Supports data residency (UK GDPR).",
+  "mode": "Indexed",
+  "metadata": { "category": "General", "version": "1.0.0" },
+  "parameters": {
+    "allowedLocations": {
+      "type": "Array",
+      "metadata": { "displayName": "Allowed locations", "strongType": "location" }
+    },
+    "effect": {
+      "type": "String",
+      "allowedValues": ["Audit", "Deny", "Disabled"],
+      "defaultValue": "Deny"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        { "field": "location", "notIn": "[parameters('allowedLocations')]" },
+        { "field": "location", "notEquals": "global" }
+      ]
+    },
+    "then": { "effect": "[parameters('effect')]" }
+  }
+}

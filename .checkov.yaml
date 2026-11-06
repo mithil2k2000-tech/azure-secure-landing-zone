@@ -1,0 +1,8 @@
+# Checkov runs on every PR. Any skip must be justified inline next to the resource
+# (#checkov:skip=ID:reason) so the reason is reviewed with the code.
+framework:
+  - terraform
+compact: true
+quiet: true
+soft-fail: false
+download-external-modules: false

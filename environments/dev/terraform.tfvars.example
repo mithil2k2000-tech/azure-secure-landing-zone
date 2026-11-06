@@ -1,0 +1,9 @@
+# Copy to terraform.tfvars (git-ignored). No secrets belong here.
+subscription_id = "00000000-0000-0000-0000-000000000000"
+tenant_id       = "00000000-0000-0000-0000-000000000000"
+owner           = "you@example.com"
+location        = "uksouth"
+
+enable_firewall = false # ~£250/month when true
+enable_bastion  = false
+policy_enforce  = true
