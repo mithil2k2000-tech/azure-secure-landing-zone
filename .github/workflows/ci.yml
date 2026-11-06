@@ -98,17 +98,22 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@v4
-      - name: Run Trivy config scan
+      - name: Trivy config scan (fails on HIGH/CRITICAL)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: config
           scan-ref: .
-          trivy-config: trivy.yaml
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+      - name: Trivy SARIF report (all severities, for code scanning)
+        if: always()
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: config
+          scan-ref: .
           format: sarif
           output: trivy.sarif
-          exit-code: "1"
-          severity: HIGH,CRITICAL
-          limit-severities-for-sarif: true
+          exit-code: "0"
       - name: Upload SARIF
         if: always()
         uses: github/codeql-action/upload-sarif@v3
