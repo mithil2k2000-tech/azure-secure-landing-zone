@@ -99,6 +99,8 @@ resource "azurerm_network_security_group" "bastion" {
   resource_group_name = azurerm_resource_group.hub.name
   tags                = var.tags
 
+  # Bastion's public endpoint must accept HTTPS from the internet (Microsoft-required rule).
+  #trivy:ignore:AZU-0047
   security_rule {
     name                       = "allow-https-inbound"
     priority                   = 120
@@ -209,6 +211,8 @@ resource "azurerm_network_security_group" "shared" {
   tags                = var.tags
 
   # Explicit deny-all inbound below Azure's default rules so intent is visible in code and audits.
+  # This is a Deny rule; the "unrestricted ingress" check matches on source "*" regardless of access.
+  #trivy:ignore:AZU-0047
   security_rule {
     name                       = "deny-all-inbound"
     priority                   = 4096
