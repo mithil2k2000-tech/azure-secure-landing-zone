@@ -178,6 +178,8 @@ resource "azurerm_network_security_group" "bastion" {
     source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "VirtualNetwork"
   }
+  # Bastion must reach the internet on port 80 for session and certificate validation (Microsoft-required rule).
+  #trivy:ignore:AZU-0051
   security_rule {
     name                       = "allow-session-info"
     priority                   = 130
